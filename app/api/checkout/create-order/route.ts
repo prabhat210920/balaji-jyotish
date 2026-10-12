@@ -8,8 +8,6 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { createOrderSchema } from "@/lib/validations/booking";
 import { ZodError } from "zod";
 
-export const dynamic = "force-dynamic";
-
 function getRazorpay() {
   const key_id = process.env.RAZORPAY_KEY_ID;
   const key_secret = process.env.RAZORPAY_KEY_SECRET;
@@ -30,7 +28,7 @@ export async function POST(req: NextRequest) {
     // ── 2. Re-verify the slot is still HELD ───────────────────
     const { data: slot, error: slotError } = await supabase
       .from("slots")
-      .select("id, status, held_until, plan_id")
+      .select("id, status, held_until")
       .eq("id", data.slotId)
       .single();
 
@@ -54,32 +52,52 @@ export async function POST(req: NextRequest) {
     // ── 3. Fetch the plan for the price ───────────────────────
     const { data: plan, error: planError } = await supabase
       .from("consultation_plans")
-      .select("id, name, price, currency")
+      .select("id, name, price")
       .eq("id", data.planId)
-      .eq("is_active", true)
+      .eq("active", true)
       .single();
 
     if (planError || !plan) {
       return NextResponse.json({ message: "Plan not found or inactive." }, { status: 404 });
     }
 
-    // ── 4. Upsert client (deduplicate by mobile) ───────────────
-    const { data: client, error: clientError } = await supabase
+    // ── 4. Find or create client (deduplicate by mobile) ───────
+    let client: { id: string };
+
+    const { data: existingClient } = await supabase
       .from("clients")
-      .upsert(
-        {
+      .select("id")
+      .eq("mobile", data.mobile)
+      .maybeSingle();
+
+    if (existingClient) {
+      // Update name/email if they changed
+      await supabase
+        .from("clients")
+        .update({
+          full_name: data.fullName,
+          email: data.email,
+        })
+        .eq("id", existingClient.id);
+
+      client = existingClient;
+    } else {
+      const { data: newClient, error: clientInsertError } = await supabase
+        .from("clients")
+        .insert({
           full_name: data.fullName,
           mobile: data.mobile,
           email: data.email,
-        },
-        { onConflict: "mobile", ignoreDuplicates: false }
-      )
-      .select("id")
-      .single();
+        })
+        .select("id")
+        .single();
 
-    if (clientError || !client) {
-      console.error("[create-order] Client upsert error:", clientError);
-      return NextResponse.json({ message: "Failed to save client details." }, { status: 500 });
+      if (clientInsertError || !newClient) {
+        console.error("[create-order] Client insert error:", clientInsertError);
+        return NextResponse.json({ message: "Failed to save client details." }, { status: 500 });
+      }
+
+      client = newClient;
     }
 
     // ── 5. Insert birth profile ────────────────────────────────
@@ -100,17 +118,23 @@ export async function POST(req: NextRequest) {
     }
 
     // ── 6. Insert booking with status PENDING_PAYMENT ─────────
+    const nowTimestamp = Date.now().toString().slice(-6);
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    const bookingNumber = `BJ-${nowTimestamp}-${randomSuffix}`;
+
     const { data: booking, error: bookingError } = await supabase
       .from("bookings")
       .insert({
+        booking_number: bookingNumber,
         client_id: client.id,
         birth_profile_id: birthProfile.id,
-        plan_id: data.planId,
+        consultation_plan_id: data.planId,
         slot_id: data.slotId,
         concern: data.concern,
-        status: "PENDING_PAYMENT",
-        meet_link: null,
-        admin_notes: null,
+        amount: plan.price,
+        currency: "INR",
+        booking_status: "PENDING_PAYMENT",
+        payment_status: "PENDING",
       })
       .select("id, booking_number")
       .single();
@@ -121,29 +145,45 @@ export async function POST(req: NextRequest) {
     }
 
     // ── 7. Create Razorpay order ───────────────────────────────
-    const razorpay = getRazorpay();
+    const amountInPaise = Math.round(Number(plan.price) * 100);
+    let rzpOrder: { id: string };
+    try {
+      const razorpay = getRazorpay();
 
-    const rzpOrder = await razorpay.orders.create({
-      amount: plan.price, // already in paise
-      currency: plan.currency || "INR",
-      receipt: booking.booking_number,
-      notes: {
-        booking_id: booking.id,
-        plan_name: plan.name,
-        client_name: data.fullName,
-      },
-    });
+      rzpOrder = await razorpay.orders.create({
+        amount: amountInPaise,
+        currency: "INR",
+        receipt: booking.booking_number,
+        notes: {
+          booking_id: booking.id,
+          plan_name: plan.name,
+          client_name: data.fullName,
+        },
+      });
+    } catch (rzpErr: any) {
+      console.error("[create-order] Razorpay error:", rzpErr);
+      const isPlaceholder =
+        !process.env.RAZORPAY_KEY_ID ||
+        process.env.RAZORPAY_KEY_ID.includes("xxxx");
+
+      return NextResponse.json(
+        {
+          message: isPlaceholder
+            ? "Razorpay test credentials are not configured in .env.local. Please set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET."
+            : rzpErr?.error?.description || rzpErr?.message || "Failed to initialize payment gateway.",
+        },
+        { status: 502 }
+      );
+    }
 
     // ── 8. Insert payment record (PENDING) ────────────────────
     const { error: paymentError } = await supabase
       .from("payments")
       .insert({
         booking_id: booking.id,
-        razorpay_order_id: rzpOrder.id,
-        razorpay_payment_id: null,
-        razorpay_signature: null,
-        amount: plan.price,
-        currency: plan.currency || "INR",
+        gateway_order_id: rzpOrder.id,
+        gateway_payment_id: null,
+        amount: Number(plan.price),
         status: "PENDING",
       });
 
@@ -159,17 +199,18 @@ export async function POST(req: NextRequest) {
         razorpayOrderId: rzpOrder.id,
         bookingId: booking.id,
         bookingNumber: booking.booking_number,
-        amount: plan.price,
-        currency: plan.currency || "INR",
+        amount: amountInPaise, // in paise for Razorpay Checkout.js
+        amountInRupees: Number(plan.price),
+        currency: "INR",
         planName: plan.name,
-        keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID,
       },
       { status: 200 }
     );
   } catch (err) {
     if (err instanceof ZodError) {
       return NextResponse.json(
-        { message: err.errors[0].message },
+        { message: err.issues[0]?.message || "Validation error" },
         { status: 400 }
       );
     }

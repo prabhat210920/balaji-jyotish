@@ -24,8 +24,10 @@ function IconWhatsApp({ className }: { className?: string }) {
   );
 }
 
-function formatDate(isoString: string) {
-  return new Date(isoString).toLocaleDateString("en-IN", {
+function formatDate(dateStr: string) {
+  if (!dateStr) return "N/A";
+  const d = dateStr.includes("T") ? new Date(dateStr) : new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString("en-IN", {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -33,12 +35,20 @@ function formatDate(isoString: string) {
   });
 }
 
-function formatTime(isoString: string) {
-  return new Date(isoString).toLocaleTimeString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+function formatTime(timeStr: string) {
+  if (!timeStr) return "N/A";
+  if (timeStr.includes("T")) {
+    return new Date(timeStr).toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  }
+  const [hours, minutes] = timeStr.split(":");
+  const h = parseInt(hours, 10);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const formattedH = h % 12 || 12;
+  return `${formattedH}:${minutes} ${ampm}`;
 }
 
 interface Props {
@@ -50,26 +60,28 @@ export default async function ConfirmationPage({ params }: Props) {
 
   const supabase = createServiceClient();
 
-  // Fetch booking with related data
-  const { data: booking, error } = await supabase
+  const { data: rawBooking, error } = await supabase
     .from("bookings")
     .select(
       `
       id,
       booking_number,
-      status,
+      booking_status,
+      payment_status,
       concern,
       clients (id, full_name, email, mobile),
       consultation_plans (id, name, duration_minutes, price),
-      slots (id, start_time, end_time)
+      slots (id, slot_date, start_time, end_time)
     `
     )
     .eq("id", bookingId)
     .single();
 
-  if (error || !booking) {
+  if (error || !rawBooking) {
     notFound();
   }
+
+  const booking = rawBooking as any;
 
   const client = Array.isArray(booking.clients)
     ? booking.clients[0]
@@ -86,7 +98,7 @@ export default async function ConfirmationPage({ params }: Props) {
     `Namaste, I have successfully booked a consultation with Balaji Jyotish.\n\n` +
       `📋 Booking ID: ${booking.booking_number}\n` +
       `🔮 Service: ${plan?.name ?? "Consultation"}\n` +
-      `📅 Date & Time: ${slot ? `${formatDate(slot.start_time)} at ${formatTime(slot.start_time)}` : "N/A"}\n\n` +
+      `📅 Date & Time: ${slot ? `${formatDate(slot.slot_date || slot.start_time)} at ${formatTime(slot.start_time)}` : "N/A"}\n\n` +
       `Please confirm my appointment. Thank you.`
   );
   const whatsAppUrl = `https://wa.me/${adminWhatsApp}?text=${whatsAppText}`;
@@ -128,12 +140,12 @@ export default async function ConfirmationPage({ params }: Props) {
             </div>
             <div
               className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide ${
-                booking.status === "CONFIRMED"
+                booking.booking_status === "CONFIRMED"
                   ? "bg-green-500/20 text-green-400"
                   : "bg-[#C9A24D]/20 text-[#C9A24D]"
               }`}
             >
-              {booking.status === "CONFIRMED" ? "Confirmed" : "Pending"}
+              {booking.booking_status === "CONFIRMED" ? "Confirmed" : "Pending"}
             </div>
           </div>
 
@@ -154,7 +166,7 @@ export default async function ConfirmationPage({ params }: Props) {
                 {plan && (
                   <p className="text-xs text-[#8a8070]">
                     {plan.duration_minutes} minutes · ₹
-                    {(plan.price / 100).toLocaleString("en-IN")}
+                    {Number(plan.price).toLocaleString("en-IN")}
                   </p>
                 )}
               </div>
@@ -174,7 +186,7 @@ export default async function ConfirmationPage({ params }: Props) {
                         Date
                       </p>
                       <p className="text-sm font-semibold text-[#0B1633]">
-                        {formatDate(slot.start_time)}
+                        {formatDate(slot.slot_date || slot.start_time)}
                       </p>
                     </div>
                   </div>

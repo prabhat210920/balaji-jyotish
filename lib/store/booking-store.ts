@@ -52,8 +52,8 @@ export interface BookingState {
   reset: () => void;
 }
 
-const initialState: Omit<BookingState, keyof Omit<BookingState, keyof BookingState extends string ? string : never>> = {
-  currentStep: 1,
+const initialState = {
+  currentStep: 1 as BookingStep,
   plan: null,
   slot: null,
   personalDetails: null,

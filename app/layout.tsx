@@ -61,8 +61,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${playfair.variable} ${inter.variable} h-full antialiased scroll-smooth`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-[#F7F3E8] text-[#202020] font-sans">
+      <body
+        className="min-h-full flex flex-col bg-[#F7F3E8] text-[#202020] font-sans"
+        suppressHydrationWarning
+      >
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

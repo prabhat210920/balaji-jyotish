@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createServiceClient } from "@/lib/supabase/server";
 
-export const dynamic = "force-dynamic";
 
 // Razorpay sends the raw body — we must read it as text for signature verification.
 export async function POST(req: NextRequest) {
@@ -66,11 +65,11 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServiceClient();
 
-    // ── 3. Find the payment record by razorpay_order_id ──────
+    // ── 3. Find the payment record by gateway_order_id ──────
     const { data: payment, error: paymentFetchError } = await supabase
       .from("payments")
       .select("id, booking_id, status")
-      .eq("razorpay_order_id", razorpayOrderId)
+      .eq("gateway_order_id", razorpayOrderId)
       .single();
 
     if (paymentFetchError || !payment) {
@@ -88,9 +87,10 @@ export async function POST(req: NextRequest) {
     const { error: paymentUpdateError } = await supabase
       .from("payments")
       .update({
-        razorpay_payment_id: razorpayPaymentId,
-        razorpay_signature: signature,
+        gateway_payment_id: razorpayPaymentId,
+        signature: signature,
         status: "CAPTURED",
+        paid_at: new Date().toISOString(),
       })
       .eq("id", payment.id);
 
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
     // ── 5. Fetch the booking to get the slot_id ───────────────
     const { data: booking, error: bookingFetchError } = await supabase
       .from("bookings")
-      .select("id, slot_id, status")
+      .select("id, slot_id, booking_status")
       .eq("id", payment.booking_id)
       .single();
 
@@ -114,7 +114,10 @@ export async function POST(req: NextRequest) {
     // ── 6. Update booking status → CONFIRMED ─────────────────
     const { error: bookingUpdateError } = await supabase
       .from("bookings")
-      .update({ status: "CONFIRMED" })
+      .update({
+        booking_status: "CONFIRMED",
+        payment_status: "CAPTURED",
+      })
       .eq("id", booking.id);
 
     if (bookingUpdateError) {

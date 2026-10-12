@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { planSchema, type PlanFormData } from "@/lib/validations/booking";
 import { useBookingStore } from "@/lib/store/booking-store";
-import { getBrowserClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/types";
 import { ArrowRight, Clock, IndianRupee, Loader2, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -29,11 +29,11 @@ export function Step1SelectPlan() {
     let mounted = true;
     async function fetchPlans() {
       try {
-        const supabase = getBrowserClient();
+        const supabase = createClient();
         const { data, error: fetchError } = await supabase
           .from("consultation_plans")
           .select("*")
-          .eq("is_active", true)
+          .eq("active", true)
           .order("sort_order", { ascending: true });
 
         if (mounted) {
@@ -41,6 +41,7 @@ export function Step1SelectPlan() {
           setPlans(data ?? []);
         }
       } catch (err) {
+        console.error("[Step1SelectPlan] Error loading plans:", err);
         if (mounted)
           setError("Could not load consultation plans. Please refresh.");
       } finally {
@@ -121,7 +122,7 @@ export function Step1SelectPlan() {
               <div className="flex items-center gap-3 pt-3 border-t border-[#d9cdb6]/60">
                 <span className="flex items-center gap-1 text-[#0B1633] font-bold text-sm">
                   <IndianRupee className="w-3.5 h-3.5" />
-                  {(plan.price / 100).toLocaleString("en-IN")}
+                  {Number(plan.price).toLocaleString("en-IN")}
                 </span>
                 <span className="text-[#8a8070] text-xs flex items-center gap-1">
                   <Clock className="w-3 h-3" />

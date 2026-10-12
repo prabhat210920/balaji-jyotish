@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useBookingStore } from "@/lib/store/booking-store";
-import { getBrowserClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/types";
 import { ArrowLeft, ArrowRight, Calendar, Clock, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -12,7 +12,8 @@ type Slot = Database["public"]["Tables"]["slots"]["Row"];
 function groupSlotsByDate(slots: Slot[]): Map<string, Slot[]> {
   const map = new Map<string, Slot[]>();
   for (const slot of slots) {
-    const date = slot.start_time.split("T")[0]; // YYYY-MM-DD
+    const date = slot.slot_date || (slot.start_time.includes("T") ? slot.start_time.split("T")[0] : "");
+    if (!date) continue;
     if (!map.has(date)) map.set(date, []);
     map.get(date)!.push(slot);
   }
@@ -28,12 +29,19 @@ function formatDate(isoDate: string): string {
   });
 }
 
-function formatTime(isoString: string): string {
-  return new Date(isoString).toLocaleTimeString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+function formatTime(timeStr: string): string {
+  if (timeStr.includes("T")) {
+    return new Date(timeStr).toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  }
+  const [hours, minutes] = timeStr.split(":");
+  const h = parseInt(hours, 10);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const formattedH = h % 12 || 12;
+  return `${formattedH}:${minutes} ${ampm}`;
 }
 
 export function Step2SelectSlot() {
@@ -47,15 +55,16 @@ export function Step2SelectSlot() {
   const fetchSlots = useCallback(async () => {
     setFetching(true);
     try {
-      const supabase = getBrowserClient();
-      const now = new Date().toISOString();
+      const supabase = createClient();
+      const today = new Date().toISOString().split("T")[0];
 
-      // Fetch AVAILABLE slots + HELD slots (client checks expiry)
+      // Fetch AVAILABLE slots + HELD slots
       const { data, error: fetchError } = await supabase
         .from("slots")
         .select("*")
-        .or(`status.eq.AVAILABLE,and(status.eq.HELD,held_until.lt.${now})`)
-        .gte("start_time", now) // only future slots
+        .or(`status.eq.AVAILABLE,status.eq.HELD`)
+        .gte("slot_date", today)
+        .order("slot_date", { ascending: true })
         .order("start_time", { ascending: true })
         .limit(90);
 
@@ -64,10 +73,11 @@ export function Step2SelectSlot() {
 
       // Pre-select first available date
       if (data && data.length > 0) {
-        const firstDate = data[0].start_time.split("T")[0];
+        const firstDate = data[0].slot_date || data[0].start_time.split("T")[0];
         setSelectedDate(firstDate);
       }
-    } catch {
+    } catch (err) {
+      console.error("[Step2SelectSlot] Error fetching slots:", err);
       setError("Could not load available slots. Please refresh.");
     } finally {
       setFetching(false);

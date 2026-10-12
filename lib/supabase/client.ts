@@ -1,30 +1,18 @@
 // lib/supabase/client.ts
-// Browser-safe Supabase client using the public anon key (governed by RLS).
-// Used in Client Components for read-only public data.
+// Browser Supabase client using @supabase/ssr — the modern approach.
+// Uses NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (replaces the legacy ANON_KEY).
 
-"use client";
+import { createBrowserClient } from "@supabase/ssr";
+import type { Database } from "./types";
 
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/lib/supabase/types";
-
-let client: ReturnType<typeof createClient<Database>> | null = null;
-
-export function getBrowserClient() {
-  if (client) return client;
-
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!url || !key) {
-    throw new Error(
-      "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY. " +
-        "Copy .env.local.example to .env.local and fill in your Supabase credentials."
-    );
-  }
-
-  client = createClient<Database>(url, key, {
-    auth: { persistSession: false },
-  });
-
-  return client;
+/**
+ * Creates a browser-safe Supabase client.
+ * Manages auth cookies automatically on the client side.
+ * Use inside Client Components ('use client').
+ */
+export function createClient() {
+  return createBrowserClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+  );
 }

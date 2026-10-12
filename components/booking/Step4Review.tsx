@@ -43,16 +43,26 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function formatDate(isoDate: string): string {
-  return new Date(isoDate).toLocaleDateString("en-IN", {
+function formatDate(dateStr: string): string {
+  if (!dateStr) return "N/A";
+  const d = dateStr.includes("T") ? new Date(dateStr) : new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString("en-IN", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
 }
 
-function formatTime(isoString: string): string {
-  return new Date(isoString).toLocaleTimeString("en-IN", {
-    hour: "2-digit", minute: "2-digit", hour12: true,
-  });
+function formatTime(timeStr: string): string {
+  if (!timeStr) return "N/A";
+  if (timeStr.includes("T")) {
+    return new Date(timeStr).toLocaleTimeString("en-IN", {
+      hour: "2-digit", minute: "2-digit", hour12: true,
+    });
+  }
+  const [hours, minutes] = timeStr.split(":");
+  const h = parseInt(hours, 10);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const formattedH = h % 12 || 12;
+  return `${formattedH}:${minutes} ${ampm}`;
 }
 
 export function Step4Review() {
@@ -124,9 +134,21 @@ export function Step4Review() {
           contact: personalDetails!.mobile,
         },
         theme: { color: "#C9A24D" },
-        handler: (response: RazorpayResponse) => {
-          // Payment captured — webhook will confirm on the backend.
-          // Redirect to confirmation page immediately for UX.
+        handler: async (response: RazorpayResponse) => {
+          try {
+            await fetch("/api/checkout/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                bookingId: orderData.bookingId,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              }),
+            });
+          } catch (e) {
+            console.error("[Razorpay] Verification request error:", e);
+          }
           router.push(`/book/confirmation/${orderData.bookingId}`);
         },
         modal: {
@@ -219,7 +241,7 @@ export function Step4Review() {
           <p className="text-white/50 text-xs mb-0.5">Total Amount</p>
           <p className="font-serif text-2xl font-bold text-[#C9A24D] flex items-center gap-1">
             <IndianRupee className="w-5 h-5" />
-            {(plan.planPrice / 100).toLocaleString("en-IN")}
+            {Number(plan.planPrice).toLocaleString("en-IN")}
           </p>
         </div>
         <div className="flex items-center gap-1.5 text-white/40 text-xs">

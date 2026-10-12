@@ -315,3 +315,14 @@ body {
   outline: 2px solid var(--color-gold);
   outline-offset: 3px;
 }
+
+/* ============================================================
+   ADMIN — dark background overrides
+   ============================================================ */
+
+/* btn-gold works on both light ivory and dark midnight backgrounds */
+.bg-white\/3 { background-color: rgba(255,255,255,0.03); }
+
+/* Ensure table row hover on dark bg */
+.hover\:bg-white\/3:hover { background-color: rgba(255,255,255,0.03); }
+
