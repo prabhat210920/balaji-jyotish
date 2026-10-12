@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   Star,
   ArrowRight,
-  Phone,
   CheckCircle2,
   Quote,
   ChevronRight,
@@ -14,6 +13,7 @@ import {
   Heart,
   BookOpen,
 } from "lucide-react";
+import YouTubeVideosSection from "@/components/website/YouTubeVideosSection";
 
 export const metadata: Metadata = {
   title: "Home | Balaji Jyotish — Vedic Astrology Consultation",
@@ -216,18 +216,11 @@ export default function HomePage() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="animate-fade-up-delay-3 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="animate-fade-up-delay-3 flex items-center gap-4">
               <Link href="/book" className="btn-gold text-base px-8 py-4">
                 Book Consultation
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <a
-                href="tel:+919876543210"
-                className="btn-outline-gold text-base px-8 py-4 border-white/25 text-white/80 hover:border-[#C9A24D] hover:text-[#C9A24D]"
-              >
-                <Phone className="w-4 h-4" />
-                Call Guruji
-              </a>
             </div>
 
             {/* Social proof */}
@@ -454,6 +447,11 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ════════════════════════════════════════════════════
+          4B. YOUTUBE VIDEO DISCOURSES
+          ════════════════════════════════════════════════════ */}
+      <YouTubeVideosSection />
 
       {/* ════════════════════════════════════════════════════
           5. TESTIMONIALS

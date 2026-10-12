@@ -1,7 +1,12 @@
-// app/(website)/layout.tsx
-// Shared layout for all public marketing pages.
-// Navbar & Footer are already in the root layout; this is a passthrough.
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export default function WebsiteLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <div className="flex-1 flex flex-col">
+      <Navbar />
+      <main className="flex-1 flex flex-col">{children}</main>
+      <Footer />
+    </div>
+  );
 }
