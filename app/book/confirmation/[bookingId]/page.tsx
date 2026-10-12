@@ -9,11 +9,14 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 
 export const metadata: Metadata = {
   title: "Booking Confirmed | Balaji Jyotish",
   description: "Your consultation has been successfully booked.",
 };
+
+export const instant = false;
 
 // WhatsApp CTA icon
 function IconWhatsApp({ className }: { className?: string }) {
@@ -56,6 +59,7 @@ interface Props {
 }
 
 export default async function ConfirmationPage({ params }: Props) {
+  await connection();
   const { bookingId } = await params;
 
   const supabase = createServiceClient();
