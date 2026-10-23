@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
-  partialPrefetching: true,
+  output: "export",
+  images: {
+    unoptimized: true,
+  },
   turbopack: {
     rules: {
       "*.css": {
@@ -10,16 +12,6 @@ const nextConfig: NextConfig = {
         as: "*.css",
       },
     },
-  },
-  images: {
-    remotePatterns: [
-      // Supabase Storage (update <project-ref> when configured)
-      {
-        protocol: "https",
-        hostname: "*.supabase.co",
-        pathname: "/storage/v1/object/public/**",
-      },
-    ],
   },
 };
 

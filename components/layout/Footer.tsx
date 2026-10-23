@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Star, Phone, Mail, MapPin } from "lucide-react";
+import { getWhatsAppUrl, WHATSAPP_DISPLAY_PHONE, WHATSAPP_NUMBER } from "@/lib/whatsapp";
+import { SITE_CONFIG } from "@/lib/site-config";
 
 // Brand icons not available in lucide-react — use inline SVGs
 function IconInstagram({ className }: { className?: string }) {
@@ -27,11 +29,12 @@ function IconFacebook({ className }: { className?: string }) {
 }
 
 const FOOTER_SERVICES = [
-  { label: "Vedic Astrology", href: "/services#vedic" },
-  { label: "Nadi Astrology", href: "/services#nadi" },
+  { label: "Kundali Analysis", href: "/services#kundali" },
+  { label: "Career & Business", href: "/services#career" },
+  { label: "Marriage & Relationships", href: "/services#marriage" },
+  { label: "Family Disputes", href: "/services#family" },
   { label: "Vastu Shastra", href: "/services#vastu" },
-  { label: "Kundali Matching", href: "/services#kundali" },
-  { label: "Numerology", href: "/services#numerology" },
+  { label: "Health & Vedic Remedies", href: "/services#remedies" },
 ];
 
 const FOOTER_QUICK = [
@@ -39,7 +42,7 @@ const FOOTER_QUICK = [
   { label: "Services", href: "/services" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
-  { label: "Book Consultation", href: "/book" },
+  { label: "Book Consultation", href: getWhatsAppUrl(), isExternal: true },
 ];
 
 // Static year constant — Next.js 16 disallows dynamic `new Date()` during prerender
@@ -76,13 +79,15 @@ export default function Footer() {
             {/* Social Links */}
             <div className="flex items-center gap-3">
               {[
-                { icon: IconInstagram, href: "#", label: "Instagram" },
-                { icon: IconYoutube, href: "#", label: "YouTube" },
-                { icon: IconFacebook, href: "#", label: "Facebook" },
+                { icon: IconInstagram, href: SITE_CONFIG.instagramUrl, label: "Instagram" },
+                { icon: IconYoutube, href: SITE_CONFIG.youtubeUrl, label: "YouTube" },
+                { icon: IconFacebook, href: SITE_CONFIG.facebookUrl, label: "Facebook" },
               ].map(({ icon: Icon, href, label }) => (
                 <a
                   key={label}
                   href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={label}
                   className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/50 hover:text-[#C9A24D] hover:border-[#C9A24D]/50 transition-all duration-200"
                 >
@@ -121,14 +126,26 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3 mt-4">
               {FOOTER_QUICK.map((s) => (
-                <li key={s.href}>
-                  <Link
-                    href={s.href}
-                    className="text-sm text-white/55 hover:text-[#C9A24D] transition-colors duration-200 flex items-center gap-2"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#C9A24D]/40 flex-shrink-0" />
-                    {s.label}
-                  </Link>
+                <li key={s.label}>
+                  {"isExternal" in s && s.isExternal ? (
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-white/55 hover:text-[#C9A24D] transition-colors duration-200 flex items-center gap-2"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#C9A24D]/40 flex-shrink-0" />
+                      {s.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={s.href}
+                      className="text-sm text-white/55 hover:text-[#C9A24D] transition-colors duration-200 flex items-center gap-2"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#C9A24D]/40 flex-shrink-0" />
+                      {s.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -143,26 +160,26 @@ export default function Footer() {
             <ul className="space-y-4 mt-4">
               <li>
                 <a
-                  href="tel:+919876543210"
+                  href={`tel:+${WHATSAPP_NUMBER}`}
                   className="flex items-start gap-3 text-sm text-white/55 hover:text-[#C9A24D] transition-colors duration-200"
                 >
                   <Phone className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#C9A24D]/70" />
-                  +91 98765 43210
+                  {WHATSAPP_DISPLAY_PHONE}
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:contact@balajijyotish.com"
+                  href={`mailto:${SITE_CONFIG.email}`}
                   className="flex items-start gap-3 text-sm text-white/55 hover:text-[#C9A24D] transition-colors duration-200"
                 >
                   <Mail className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#C9A24D]/70" />
-                  contact@balajijyotish.com
+                  {SITE_CONFIG.email}
                 </a>
               </li>
               <li>
                 <span className="flex items-start gap-3 text-sm text-white/55">
                   <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#C9A24D]/70" />
-                  Tirupati, Andhra Pradesh, India
+                  <span>{SITE_CONFIG.address}</span>
                 </span>
               </li>
             </ul>

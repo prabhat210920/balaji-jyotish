@@ -1,21 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
-
-/* ── Google Fonts ─────────────────────────────────────────── */
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
 
 /* ── Metadata ─────────────────────────────────────────────── */
 export const metadata: Metadata = {
@@ -24,7 +8,7 @@ export const metadata: Metadata = {
     template: "%s | Balaji Jyotish",
   },
   description:
-    "Experience the ancient wisdom of Vedic Astrology with Balaji Jyotish. Book personalized consultations for Kundali, Vastu, Nadi Shastra, and more.",
+    "Experience the ancient wisdom of Vedic Astrology with Balaji Jyotish. Consultations for Kundali, Vastu, Nadi Shastra, and more directly on WhatsApp.",
   keywords: [
     "Vedic Astrology",
     "Jyotish",
@@ -43,22 +27,26 @@ export const metadata: Metadata = {
     siteName: "Balaji Jyotish",
     title: "Balaji Jyotish | Vedic Astrology Consultation",
     description:
-      "Experience the ancient wisdom of Vedic Astrology. Book personalized consultations.",
+      "Experience the ancient wisdom of Vedic Astrology. Consultations for Kundali, Vastu, Nadi Shastra, and more.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Balaji Jyotish | Vedic Astrology Consultation",
     description:
-      "Experience the ancient wisdom of Vedic Astrology. Book personalized consultations.",
+      "Experience the ancient wisdom of Vedic Astrology. Consultations for Kundali, Vastu, Nadi Shastra, and more.",
   },
 };
 
 /* ── Root Layout ─────────────────────────────────────────── */
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${inter.variable} h-full antialiased scroll-smooth`}
+      className="h-full antialiased scroll-smooth"
       suppressHydrationWarning
     >
       <body

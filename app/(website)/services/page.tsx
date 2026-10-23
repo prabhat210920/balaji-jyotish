@@ -1,83 +1,67 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  Sun,
-  BookOpen,
-  Compass,
-  Heart,
-  Moon,
-  Hash,
-  ArrowRight,
-  Sparkles,
-  ShieldCheck,
-  Clock,
-} from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { getWhatsAppUrl, getServiceWhatsAppUrl } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
-  title: "Astrology Services",
+  title: "Consultations We Offer | Balaji Jyotish",
   description:
-    "Explore authentic Vedic Astrology consultations including Kundali Milan, Nadi Shastra, Vastu Shastra, and Auspicious Muhurta selection.",
+    "Explore problem-solving Vedic astrology consultations including Kundali Analysis, Career & Business Guidance, Marriage Harmony, Family Dispute Resolution, and Vastu Shastra.",
 };
 
 const SERVICES_DATA = [
   {
-    id: "vedic",
-    icon: Sun,
-    title: "Comprehensive Vedic Astrology",
-    subtitle: "Complete Birth Chart & Kundali Analysis",
-    description:
-      "A deep, comprehensive analysis of your Janam Kundali (birth chart). Understand planetary periods (Dasha & Antardasha), planetary strengths, life challenges, and timely remedial measures (Upayas) rooted in Parashari Jyotish.",
-    duration: "45–60 mins",
-    popular: true,
-  },
-  {
     id: "kundali",
-    icon: Heart,
-    title: "Kundali Milan & Compatibility",
-    subtitle: "Marriage & Relationship Horoscope Matching",
+    image: "/assets/services/kundali.jpg",
+    title: "Kundali Analysis & Predictions",
+    subtitle: "Complete Birth Chart & Life Roadmap",
     description:
-      "In-depth 36-Guna Ashtakoot matching, detailed assessment of Mangal Dosha, Nadi Dosha, mental temperaments, and long-term marital prosperity for prospective couples.",
-    duration: "45 mins",
+      "A deep, comprehensive analysis of your Janam Kundali (birth chart). Understand your planetary periods (Dasha & Antardasha), planetary strengths, life challenges, and timely remedial measures (Upayas) rooted in authentic Parashari Jyotish.",
     popular: true,
   },
   {
-    id: "nadi",
-    icon: BookOpen,
-    title: "Nadi Astrology Consultation",
-    subtitle: "Ancient Palm Leaf Wisdom",
+    id: "career",
+    image: "/assets/services/career.jpg",
+    title: "Career & Business Guidance",
+    subtitle: "Job Growth, Business Success & Financial Stability",
     description:
-      "Unlock past karmic patterns and precise life trajectory predictions through ancient South Indian Nadi astrological principles. Understand major turning points with uncanny accuracy.",
-    duration: "60 mins",
+      "Overcome career stagnation, job change dilemmas, promotion delays, and financial stress. Guruji evaluates your 10th and 11th houses to guide business investments, partnerships, and auspicious timing for career moves.",
+    popular: false,
+  },
+  {
+    id: "marriage",
+    image: "/assets/services/marriage.jpg",
+    title: "Marriage & Relationship Harmony",
+    subtitle: "Kundali Milan, Compatibility & Delay in Marriage",
+    description:
+      "In-depth 36-Guna Ashtakoot matching, thorough assessment of Manglik Dosha, Nadi Dosha, and emotional compatibility. Receive remedies for delayed marriage, misunderstandings, and long-term marital bliss.",
+    popular: true,
+  },
+  {
+    id: "family",
+    image: "/assets/services/family.jpg",
+    title: "Family & Dispute Resolution",
+    subtitle: "Domestic Peace, Property & Generational Harmony",
+    description:
+      "Astrological mediation and spiritual remedies for ongoing family conflicts, property disputes, parent-child disagreements, and domestic tension, restoring peace and mutual respect to your household.",
     popular: false,
   },
   {
     id: "vastu",
-    icon: Compass,
+    image: "/assets/services/vastu.jpg",
     title: "Vastu Shastra Consultation",
     subtitle: "Harmonising Energy for Home & Workplace",
     description:
-      "Evaluation of your residential or commercial space according to Vedic Vastu principles. Identify energy blockages and receive practical, non-destructive remedial remedies.",
-    duration: "60 mins",
+      "Evaluation of your residential or commercial space according to Vedic Vastu principles. Identify energy blockages and receive practical, non-destructive remedial recommendations for health and prosperity.",
     popular: false,
   },
   {
-    id: "muhurta",
-    icon: Moon,
-    title: "Auspicious Muhurta Selection",
-    subtitle: "Divine Timing for Sacred Milestones",
+    id: "remedies",
+    image: "/assets/services/remedies.jpg",
+    title: "Health & Vedic Remedies",
+    subtitle: "Planetary Healing, Gemstones & Spiritual Upayas",
     description:
-      "Scientific selection of the most propitious planetary alignment for weddings, Griha Pravesh (housewarming), business inaugurations, and crucial ventures.",
-    duration: "30 mins",
-    popular: false,
-  },
-  {
-    id: "numerology",
-    icon: Hash,
-    title: "Vedic Numerology & Name Correction",
-    subtitle: "Harnessing the Vibrations of Numbers",
-    description:
-      "Analysis of your Life Path, Destiny, and Soul numbers. Get personalized suggestions for business naming, personal name spelling adjustments, and lucky numbers.",
-    duration: "30 mins",
+      "Holistic guidance on persistent stress, chronic vitality issues, and planetary doshas. Guruji prescribes personalized certified gemstone recommendations, sacred Vedic mantras, and charity remedies.",
     popular: false,
   },
 ];
@@ -90,65 +74,69 @@ export default function ServicesPage() {
         <div className="max-w-2xl mx-auto text-center mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C9A24D]/15 border border-[#C9A24D]/30 text-[#0B1633] text-xs font-semibold uppercase tracking-wider mb-4">
             <Sparkles className="w-3.5 h-3.5 text-[#8C6D23]" />
-            Sacred Consultations
+            Personalized Guidance
           </div>
           <h1 className="font-serif text-3xl sm:text-5xl font-bold text-[#0B1633] mb-4">
-            Astrology Consultation Services
+            Consultations We Offer
           </h1>
           <p className="text-[#202020]/70 text-base leading-relaxed">
-            Every session is personalized, strictly confidential, and grounded in authentic ancient
-            Vedic scriptures. Choose a service to discover divine guidance for your life path.
+            Every session is personalized, strictly confidential, and tailored to the exact challenges you face. Choose an area below to receive divine guidance and practical remedies directly via WhatsApp.
           </p>
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {SERVICES_DATA.map((s) => {
-            const Icon = s.icon;
-            return (
-              <div
-                key={s.id}
-                id={s.id}
-                className="bg-white rounded-2xl p-7 border border-[#d9cdb6] shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-              >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7">
+          {SERVICES_DATA.map((s) => (
+            <div
+              key={s.id}
+              id={s.id}
+              className="bg-white rounded-2xl overflow-hidden border border-[#d9cdb6] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+            >
+              {/* Image Banner */}
+              <div className="relative h-52 w-full overflow-hidden bg-[#0B1633]/5">
+                <Image
+                  src={s.image}
+                  alt={s.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none" />
+                {s.popular && (
+                  <span className="absolute top-3.5 right-3.5 bg-[#C9A24D] text-[#0B1633] text-xs font-bold tracking-wider uppercase px-2.5 py-1 rounded-full shadow-sm">
+                    Popular
+                  </span>
+                )}
+                <p className="absolute bottom-3 left-4 text-[#E0C477] text-xs font-semibold tracking-wider uppercase">
+                  {s.subtitle}
+                </p>
+              </div>
+
+              {/* Card Body */}
+              <div className="p-6 flex flex-col flex-1 justify-between">
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-[#0B1633] flex items-center justify-center text-[#C9A24D]">
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    {s.popular && (
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#C9A24D]/20 text-[#8C6D23] border border-[#C9A24D]/40">
-                        Popular
-                      </span>
-                    )}
-                  </div>
-                  <h2 className="font-serif text-xl font-bold text-[#0B1633] mb-1">
+                  <h2 className="font-serif text-2xl font-bold text-[#0B1633] mb-3 group-hover:text-[#8C6D23] transition-colors">
                     {s.title}
                   </h2>
-                  <p className="text-xs text-[#8C6D23] font-semibold mb-3">
-                    {s.subtitle}
-                  </p>
-                  <p className="text-sm text-[#202020]/70 leading-relaxed mb-6">
+                  <p className="text-sm text-[#202020]/75 leading-relaxed mb-6">
                     {s.description}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-[#d9cdb6]/60 flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-xs text-[#202020]/60">
-                    <Clock className="w-3.5 h-3.5 text-[#C9A24D]" />
-                    <span>{s.duration}</span>
-                  </div>
-                  <Link
-                    href="/book"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0B1633] hover:text-[#8C6D23] transition-colors"
+                <div className="pt-4 border-t border-[#d9cdb6]/60">
+                  <a
+                    href={getServiceWhatsAppUrl(s.title)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-gold w-full text-center py-3 px-4 text-sm font-semibold justify-center inline-flex items-center gap-2 rounded-xl"
                   >
-                    Book Now
+                    Book via WhatsApp
                     <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  </a>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
 
         {/* Bottom Banner */}
@@ -160,10 +148,15 @@ export default function ServicesPage() {
             <p className="text-white/70 text-sm mb-6">
               Book a Comprehensive Kundali session. Guruji will evaluate your birth chart and address all your specific questions across career, health, family, and marriage.
             </p>
-            <Link href="/book" className="btn-gold inline-flex items-center gap-2">
+            <a
+              href={getWhatsAppUrl("Namaste Guruji, I would like to book a Comprehensive Kundali session. Please guide me on available timings.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-gold inline-flex items-center gap-2"
+            >
               Book Consultation Now
               <ArrowRight className="w-4 h-4" />
-            </Link>
+            </a>
           </div>
         </div>
       </div>

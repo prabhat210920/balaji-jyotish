@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -15,6 +16,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const whatsappUrl = getWhatsAppUrl();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -88,9 +90,14 @@ export default function Navbar() {
 
             {/* CTA Button */}
             <div className="hidden md:block">
-              <Link href="/book" className="btn-gold text-sm px-6 py-3">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-gold text-sm px-6 py-3 inline-flex items-center gap-2"
+              >
                 Book Consultation
-              </Link>
+              </a>
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -159,13 +166,15 @@ export default function Navbar() {
           </nav>
 
           <div className="p-5 border-t border-white/10">
-            <Link
-              href="/book"
-              className="btn-gold w-full justify-center"
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-gold w-full justify-center text-center"
               onClick={() => setMobileOpen(false)}
             >
               Book Consultation
-            </Link>
+            </a>
           </div>
         </aside>
       </div>

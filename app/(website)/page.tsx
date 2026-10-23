@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Star,
   ArrowRight,
   CheckCircle2,
   Quote,
   ChevronRight,
-  Sun,
-  Moon,
-  Compass,
-  Hash,
-  Heart,
-  BookOpen,
 } from "lucide-react";
 import YouTubeVideosSection from "@/components/website/YouTubeVideosSection";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Home | Balaji Jyotish — Vedic Astrology Consultation",
@@ -26,65 +22,64 @@ export const metadata: Metadata = {
    ────────────────────────────────────────────────────────── */
 
 const STATS = [
-  { value: "25+", label: "Years of Experience" },
-  { value: "15,000+", label: "Consultations Done" },
-  { value: "98%", label: "Client Satisfaction" },
-  { value: "40+", label: "Countries Served" },
+  { value: "10+", label: "Years of Experience" },
+  { value: "1000+", label: "Consultations Done" },
+  { value: "12", label: "Horoscopes Types" },
 ];
 
 const SERVICES = [
   {
-    icon: Sun,
-    title: "Vedic Astrology",
-    subtitle: "Jyotish Shastra",
+    image: "/assets/services/kundali.jpg",
+    title: "Kundali Analysis",
+    subtitle: "Birth Chart & Life Predictions",
     description:
-      "Uncover the celestial blueprint of your life. Detailed birth chart analysis, planetary periods, and life predictions rooted in authentic Vedic tradition.",
-    href: "/services#vedic",
+      "Deep evaluation of your Janam Kundali, planetary positions, Mahadasha cycles, and future forecasts to give you crystal-clear life direction.",
+    href: "/services#kundali",
     badge: "Most Popular",
   },
   {
-    icon: BookOpen,
-    title: "Nadi Astrology",
-    subtitle: "Ancient Palm Leaf Reading",
+    image: "/assets/services/career.jpg",
+    title: "Career & Business Growth",
+    subtitle: "Job, Wealth & Financial Stability",
     description:
-      "Discover your pre-written destiny in the sacred Nadi leaves. A rare, deeply personal consultation drawing from India's oldest astrological manuscripts.",
-    href: "/services#nadi",
+      "Overcome career stagnation, job transition dilemmas, delayed promotions, business losses, and financial hurdles with practical astrological remedies.",
+    href: "/services#career",
     badge: null,
   },
   {
-    icon: Compass,
-    title: "Vastu Shastra",
-    subtitle: "Sacred Space Architecture",
+    image: "/assets/services/marriage.jpg",
+    title: "Marriage & Relationships",
+    subtitle: "Kundali Milan & Compatibility",
     description:
-      "Harmonise your home, office, or land with cosmic energies. Expert guidance on spatial orientation, five elements, and prosperity directions.",
+      "Resolve delayed marriage, love relationship hurdles, and marital discord with thorough 36-Guna matching, Manglik Dosha analysis, and remedies.",
+    href: "/services#marriage",
+    badge: "High Demand",
+  },
+  {
+    image: "/assets/services/family.jpg",
+    title: "Family Dispute Resolution",
+    subtitle: "Domestic Peace & Generational Harmony",
+    description:
+      "Find peaceful remedies for recurring domestic conflicts, ancestral property disputes, and family misunderstandings to restore household harmony.",
+    href: "/services#family",
+    badge: null,
+  },
+  {
+    image: "/assets/services/vastu.jpg",
+    title: "Vastu Shastra Consultation",
+    subtitle: "Home & Commercial Energy Balance",
+    description:
+      "Harmonise your home, plot, or commercial workplace with cosmic energies. Identify structural defects and receive effective, non-demolition remedies.",
     href: "/services#vastu",
     badge: null,
   },
   {
-    icon: Heart,
-    title: "Kundali Matching",
-    subtitle: "Vivah Compatibility",
+    image: "/assets/services/remedies.jpg",
+    title: "Health & Vedic Remedies",
+    subtitle: "Gemstones & Planetary Healing",
     description:
-      "Ensure a harmonious union through thorough Kundali Milan — analysing Ashtakoot, Mangalik Dosha, and long-term compatibility.",
-    href: "/services#kundali",
-    badge: null,
-  },
-  {
-    icon: Moon,
-    title: "Muhurta Selection",
-    subtitle: "Auspicious Timing",
-    description:
-      "Choose the perfect moment for business launches, travel, marriages, surgeries, and important decisions guided by planetary positions.",
-    href: "/services#muhurta",
-    badge: null,
-  },
-  {
-    icon: Hash,
-    title: "Numerology",
-    subtitle: "Science of Numbers",
-    description:
-      "Understand your life path, destiny number, and name vibrations. Powerful insights drawn from Vedic numerological traditions.",
-    href: "/services#numerology",
+      "Alleviate persistent stress, chronic vitality issues, and planetary afflictions with authentic certified gemstone advice, mantras, and personalized Upayas.",
+    href: "/services#remedies",
     badge: null,
   },
 ];
@@ -95,21 +90,21 @@ const TESTIMONIALS = [
     location: "Bangalore, Karnataka",
     rating: 5,
     text: "Guruji's reading was uncannily accurate. He described events from my past I had never shared and guided me through a very difficult career transition. Truly a divine experience.",
-    consultation: "Vedic Astrology",
+    consultation: "Career & Business Guidance",
   },
   {
     name: "Rajesh & Sunita Mehta",
     location: "Pune, Maharashtra",
     rating: 5,
     text: "We consulted Guruji for Kundali matching before our wedding. His thorough analysis gave us immense clarity and confidence. We are now happily married for 3 years.",
-    consultation: "Kundali Matching",
+    consultation: "Marriage & Relationship Harmony",
   },
   {
     name: "Dr. Arvind Krishnamurthy",
     location: "Chennai, Tamil Nadu",
     rating: 5,
     text: "The Vastu consultation transformed our clinic. Within months, patient footfall increased significantly. Guruji's recommendations were precise and highly practical.",
-    consultation: "Vastu Shastra",
+    consultation: "Vastu Shastra Consultation",
   },
 ];
 
@@ -210,17 +205,22 @@ export default function HomePage() {
 
             {/* Sub-headline */}
             <p className="animate-fade-up-delay-2 text-white/65 text-base sm:text-lg leading-relaxed mb-10 max-w-lg">
-              With over 25 years of Vedic scholarship, Guruji Balaji provides
+              With over 10+ years of Vedic scholarship, Guruji Balaji provides
               deeply personal, spiritually grounded consultations that bring
               clarity, peace, and purpose to your life journey.
             </p>
 
             {/* CTA Buttons */}
             <div className="animate-fade-up-delay-3 flex items-center gap-4">
-              <Link href="/book" className="btn-gold text-base px-8 py-4">
+              <a
+                href={getWhatsAppUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-gold text-base px-8 py-4 inline-flex items-center gap-2"
+              >
                 Book Consultation
                 <ArrowRight className="w-4 h-4" />
-              </Link>
+              </a>
             </div>
 
             {/* Social proof */}
@@ -240,7 +240,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <p className="text-white/50 text-xs mt-0.5">
-                  Trusted by 15,000+ seekers worldwide
+                  Trusted by 1,000+ seekers worldwide
                 </p>
               </div>
             </div>
@@ -260,16 +260,21 @@ export default function HomePage() {
         aria-label="Credibility statistics"
       >
         <div className="section-container">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-4">
+          <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-6">
             {STATS.map((stat, i) => (
               <div
                 key={i}
-                className={`text-center ${i < 3 ? "lg:border-r lg:border-white/15" : ""}`}
+                className={`text-center px-4 ${i < 2
+                    ? "border-b border-white/15 pb-6 sm:pb-0 sm:border-b-0 sm:border-r"
+                    : ""
+                  }`}
               >
-                <p className="font-serif text-3xl sm:text-4xl font-bold text-[#E0C477] mb-1.5">
+                <p className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#E0C477] mb-1.5">
                   {stat.value}
                 </p>
-                <p className="text-white/60 text-sm tracking-wide">{stat.label}</p>
+                <p className="text-white/70 text-sm sm:text-base tracking-wide font-medium">
+                  {stat.label}
+                </p>
               </div>
             ))}
           </div>
@@ -290,7 +295,7 @@ export default function HomePage() {
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="h-px w-8 bg-[#C9A24D]" />
               <span className="text-[#C9A24D] text-xs font-semibold tracking-[0.22em] uppercase">
-                Sacred Services
+                Problem-Solving Guidance
               </span>
               <div className="h-px w-8 bg-[#C9A24D]" />
             </div>
@@ -298,54 +303,53 @@ export default function HomePage() {
               Consultations We Offer
             </h2>
             <div className="gold-divider my-4" />
-            <p className="text-[#202020]/60 max-w-xl mx-auto text-base leading-relaxed mt-4">
-              Each consultation is a sacred dialogue — deeply personal, spiritually
-              rooted, and practically empowering.
+            <p className="text-[#202020]/70 max-w-xl mx-auto text-base leading-relaxed mt-4">
+              Clear, scripture-backed astrological solutions for everyday life challenges — from career transitions and family disputes to marital harmony and Vastu.
             </p>
           </div>
 
           {/* Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7">
-            {SERVICES.map((service, i) => {
-              const Icon = service.icon;
-              return (
-                <Link
-                  key={i}
-                  href={service.href}
-                  className="service-card group relative bg-white rounded-xl p-7 flex flex-col gap-4 cursor-pointer shadow-[var(--shadow-card)] no-underline"
-                >
-                  {/* Badge */}
+            {SERVICES.map((service, i) => (
+              <Link
+                key={i}
+                href={service.href}
+                className="service-card group relative bg-white rounded-2xl overflow-hidden flex flex-col cursor-pointer shadow-[var(--shadow-card)] hover:shadow-xl transition-all duration-300 no-underline border border-[#d9cdb6]/60 hover:border-[#C9A24D]"
+              >
+                {/* Image Banner */}
+                <div className="relative h-48 w-full overflow-hidden bg-[#0B1633]/5">
+                  <Image
+                    src={service.image}
+                    alt={service.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none" />
                   {service.badge && (
-                    <span className="absolute top-4 right-4 bg-[#C9A24D] text-[#0B1633] text-[0.65rem] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full">
+                    <span className="absolute top-3.5 right-3.5 bg-[#C9A24D] text-[#0B1633] text-[0.65rem] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full shadow-sm">
                       {service.badge}
                     </span>
                   )}
+                  <p className="absolute bottom-3 left-4 text-[#E0C477] text-[0.7rem] font-semibold tracking-[0.18em] uppercase">
+                    {service.subtitle}
+                  </p>
+                </div>
 
-                  {/* Icon */}
-                  <div className="w-12 h-12 rounded-lg bg-[#0B1633]/5 flex items-center justify-center group-hover:bg-[#C9A24D]/10 transition-colors duration-300">
-                    <Icon className="w-5.5 h-5.5 text-[#C9A24D]" strokeWidth={1.5} />
-                  </div>
-
-                  {/* Content */}
-                  <div>
-                    <p className="text-[#C9A24D] text-[0.7rem] font-semibold tracking-[0.18em] uppercase mb-1">
-                      {service.subtitle}
-                    </p>
-                    <h3 className="font-serif text-xl font-bold text-[#0B1633] mb-2.5">
-                      {service.title}
-                    </h3>
-                    <p className="text-[#202020]/60 text-sm leading-relaxed">
-                      {service.description}
-                    </p>
-                  </div>
-
-                  {/* Arrow CTA */}
+                {/* Content */}
+                <div className="p-6 flex flex-col flex-1">
+                  <h3 className="font-serif text-xl font-bold text-[#0B1633] mb-2.5 group-hover:text-[#8C6D23] transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="text-[#202020]/70 text-sm leading-relaxed mb-4">
+                    {service.description}
+                  </p>
                   <div className="flex items-center gap-1.5 text-[#C9A24D] text-sm font-semibold mt-auto pt-2 group-hover:gap-3 transition-all duration-200">
                     Learn More <ChevronRight className="w-4 h-4" />
                   </div>
-                </Link>
-              );
-            })}
+                </div>
+              </Link>
+            ))}
           </div>
 
           {/* All Services CTA */}
@@ -418,7 +422,7 @@ export default function HomePage() {
                 under the lineage of revered scholars from Andhra Pradesh.
               </p>
               <p className="text-[#202020]/70 text-base leading-relaxed mb-8">
-                With over 25 years of dedicated practice and more than 15,000
+                With over 10+ years of dedicated practice and more than 1,000
                 consultations across India, the United States, UK, and Southeast Asia,
                 he has earned a reputation for penetrating insight, compassionate
                 guidance, and uncanny accuracy.
@@ -570,7 +574,7 @@ export default function HomePage() {
               "✦ Strictly Confidential",
               "✦ Available Online & In-Person",
               "✦ English, Hindi & Telugu",
-              "✦ Secure Razorpay Payment",
+              "✦ Direct Consultation via WhatsApp",
             ].map((pill) => (
               <span
                 key={pill}
@@ -583,12 +587,17 @@ export default function HomePage() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/book" className="btn-gold text-base px-10 py-4">
+            <a
+              href={getWhatsAppUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-gold text-base px-10 py-4 inline-flex items-center gap-2"
+            >
               Book Consultation
               <ArrowRight className="w-4 h-4" />
-            </Link>
+            </a>
             <a
-              href="https://wa.me/919876543210"
+              href={getWhatsAppUrl()}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-outline-gold text-base px-10 py-4"
