@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Play, Sparkles, ExternalLink, Clock, Eye, Flame, Compass, Heart, Sun } from "lucide-react";
+import { Play, Sparkles, ExternalLink, Clock, Flame } from "lucide-react";
 
 function IconYoutube({ className }: { className?: string }) {
   return (
@@ -19,60 +19,34 @@ interface VideoItem {
   duration: string;
   description: string;
   views: string;
-  isShort?: boolean;
 }
 
 const ASTRO_KC_SHARAN_VIDEOS: VideoItem[] = [
   {
-    id: "s1",
-    youtubeId: "LXb3EKWsInQ",
-    title: "Signs of a Weak Sun & Mars: Symptoms & Authentic Vedic Remedies",
-    category: "Graha Upaya",
-    duration: "Short • 0:58",
+    id: "v1",
+    youtubeId: "PatdsAJzeQ8",
+    title: "मेहनत आपकी, Credit किसी और का? Weak Sun Symptoms & Remedies | Astro K C Sharan",
+    category: "Surya Graha Upaya",
+    duration: "Video • 06:07",
     description:
-      "Astro K.C. Sharan explains the psychological and health symptoms when Surya or Mangal are afflicted in your Kundali, and immediate remedies to strengthen your vitality.",
-    views: "85K views",
-    isShort: true,
+      "Astro K.C. Sharan explains the psychological and astrological symptoms when Surya (Sun) is afflicted in your Janam Kundali — especially when your hard work goes uncredited — and shares authentic Vedic remedies to boost vitality and career recognition.",
+    views: "Featured Discourse",
   },
   {
-    id: "s2",
-    youtubeId: "kJQP7kiw5Fk",
-    title: "Vastu Shastra: 3 Energy Mistakes Blocking Career & Financial Growth",
-    category: "Vastu Science",
-    duration: "Short • 0:54",
+    id: "v2",
+    youtubeId: "QN1TCzkGcAM",
+    title: "8 Signs of a Weak Moon: Overthinking, Betrayal, and Financial Struggle | Astro K C Sharan",
+    category: "Chandra Graha Upaya",
+    duration: "Video • Detailed Discourse",
     description:
-      "Crucial directional alignment guidelines for your workspace and home entrance to eliminate financial stagnation and invite positive cosmic vibrations.",
-    views: "120K views",
-    isShort: true,
-  },
-  {
-    id: "s3",
-    youtubeId: "fJ9rUzIMcZQ",
-    title: "Kundali Milan: Why Ashtakoot Matching Alone Is Not Enough",
-    category: "Kundali Milan",
-    duration: "Short • 1:00",
-    description:
-      "Understanding Mangalik Dosha, Bhakoot, and planetary longevity factors in horoscope compatibility before finalizing marriage alliances.",
-    views: "94K views",
-    isShort: true,
-  },
-  {
-    id: "s4",
-    youtubeId: "9bZkp7q19f0",
-    title: "Auspicious Timings & Planetary Transits: How to Choose a Muhurta",
-    category: "Muhurta Guidance",
-    duration: "Short • 0:52",
-    description:
-      "Astro K.C. Sharan shares the importance of Shubh Muhurtas for new business launches, Griha Pravesh, and sacred milestones.",
-    views: "110K views",
-    isShort: true,
+      "A detailed Vedic discourse by Astro K.C. Sharan on the role of Moon (Chandra) in your birth chart, signs of an afflicted Moon (overthinking, emotional betrayal, financial struggles), and practical remedies.",
+    views: "Featured Discourse",
   },
 ];
 
 export default function YouTubeVideosSection() {
   const [activeVideo, setActiveVideo] = useState<VideoItem>(ASTRO_KC_SHARAN_VIDEOS[0]);
-  const channelShortsUrl = "https://www.youtube.com/@AstroKCSharan/shorts";
-  const channelHomeUrl = "https://www.youtube.com/@AstroKCSharan";
+  const channelUrl = "https://www.youtube.com/@AstroKCSharan";
 
   return (
     <section className="py-20 lg:py-28 bg-[#0B1633] text-white relative overflow-hidden">
@@ -88,12 +62,11 @@ export default function YouTubeVideosSection() {
             Official YouTube Channel
           </div>
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Vedic Wisdom & Shorts
+            Vedic Discourses & Remedies
           </h2>
           <p className="text-white/60 text-base leading-relaxed">
-            Watch astrological tips, Vastu remedies, and planetary transit insights by{" "}
-            <span className="text-[#C9A24D] font-semibold">Astro K.C. Sharan</span> on his official
-            YouTube Shorts and video discourses.
+            Watch in-depth astrological discourses, planetary transit insights, and authentic Vedic remedies by{" "}
+            <span className="text-[#C9A24D] font-semibold">Astro K.C. Sharan</span> on his official YouTube channel.
           </p>
         </div>
 
@@ -121,8 +94,7 @@ export default function YouTubeVideosSection() {
                     <Clock className="w-3.5 h-3.5" />
                     {activeVideo.duration}
                   </span>
-                  <span className="flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5" />
+                  <span className="text-[#C9A24D] font-medium">
                     {activeVideo.views}
                   </span>
                 </div>
@@ -137,15 +109,15 @@ export default function YouTubeVideosSection() {
 
               <div className="pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
                 <span className="text-xs text-white/40">
-                  Creator: <strong className="text-white">Astro K.C. Sharan</strong> (@AstroKCSharan)
+                  Speaker: <strong className="text-white">Astro K.C. Sharan</strong> (@AstroKCSharan)
                 </span>
                 <a
-                  href={channelShortsUrl}
+                  href={`https://www.youtube.com/watch?v=${activeVideo.youtubeId}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#C9A24D] hover:underline"
                 >
-                  Watch more on YouTube Shorts
+                  Watch full video on YouTube
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
@@ -153,11 +125,11 @@ export default function YouTubeVideosSection() {
           </div>
 
           {/* Playlist Column (1 col) */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between pb-2 border-b border-white/10">
               <h4 className="text-white font-semibold text-sm flex items-center gap-2">
                 <Flame className="w-4 h-4 text-[#C9A24D]" />
-                Top Astrological Shorts
+                Featured Discourses
               </h4>
               <span className="text-xs text-white/40">{ASTRO_KC_SHARAN_VIDEOS.length} Videos</span>
             </div>
@@ -169,9 +141,9 @@ export default function YouTubeVideosSection() {
                   <button
                     key={video.id}
                     onClick={() => setActiveVideo(video)}
-                    className={`text-left p-4 rounded-xl border transition-all flex gap-3.5 items-start ${
+                    className={`text-left p-4 rounded-xl border transition-all flex gap-3.5 items-start cursor-pointer ${
                       isSelected
-                        ? "bg-[#C9A24D]/15 border-[#C9A24D]/40 text-white shadow-lg"
+                        ? "bg-[#C9A24D]/15 border-[#C9A24D]/40 text-white shadow-lg ring-1 ring-[#C9A24D]/30"
                         : "bg-white/3 border-white/8 hover:bg-white/7 hover:border-white/15 text-white/70"
                     }`}
                   >
@@ -191,10 +163,8 @@ export default function YouTubeVideosSection() {
                       <p className="font-medium text-xs sm:text-sm line-clamp-2 text-white">
                         {video.title}
                       </p>
-                      <div className="flex items-center gap-3 mt-1 text-[0.65rem] text-white/40">
+                      <div className="flex items-center gap-3 mt-1.5 text-[0.65rem] text-white/40">
                         <span>{video.duration}</span>
-                        <span>•</span>
-                        <span>{video.views}</span>
                       </div>
                     </div>
                   </button>
@@ -202,37 +172,32 @@ export default function YouTubeVideosSection() {
               })}
             </div>
 
-            {/* Subscribe to @AstroKCSharan Box */}
-            <div className="mt-4 p-5 rounded-2xl bg-gradient-to-br from-[#FF0000]/15 to-transparent border border-red-500/25 flex flex-col gap-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-lg">
+            {/* Official Channel Card */}
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FF0000]/15 via-red-950/20 to-transparent border border-red-500/25 flex flex-col gap-3 mt-2">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-lg">
                   <IconYoutube className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <p className="text-white font-bold text-sm leading-none">Astro K C Sharan</p>
-                  <p className="text-white/40 text-xs mt-1">@AstroKCSharan</p>
+                  <p className="text-white/50 text-xs mt-1">@AstroKCSharan • Official Channel</p>
                 </div>
               </div>
+
               <p className="text-xs text-white/70 leading-relaxed">
-                Watch daily Vedic horoscope insights, Rahu-Ketu remedies, and Vastu guidelines on YouTube Shorts.
+                Subscribe for regular discourses on Kundali analysis, planetary remedies, Vastu Shastra, and daily astrological guidance.
               </p>
-              <div className="flex flex-col sm:flex-row gap-2 pt-1">
+
+              <div className="pt-2">
                 <a
-                  href={channelShortsUrl}
+                  href={channelUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 inline-flex items-center justify-center gap-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-3 py-2.5 rounded-lg transition-colors shadow-md text-center"
+                  className="w-full inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-4 py-3 rounded-xl transition-all shadow-md text-center"
                 >
-                  Explore Shorts
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-                <a
-                  href={channelHomeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-medium px-3 py-2.5 rounded-lg transition-colors border border-white/15 text-center"
-                >
-                  Subscribe
+                  <IconYoutube className="w-4 h-4" />
+                  Visit YouTube Channel
+                  <ExternalLink className="w-3.5 h-3.5 ml-1" />
                 </a>
               </div>
             </div>

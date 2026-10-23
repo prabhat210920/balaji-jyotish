@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Star,
-  CheckCircle2,
   ArrowRight,
   ShieldCheck,
   Award,
@@ -10,6 +9,7 @@ import {
   HeartHandshake,
   Sparkles,
 } from "lucide-react";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "About Guruji Balaji | Vedic Astrologer & Vastu Expert",
@@ -182,10 +182,15 @@ export default function AboutPage() {
               Book a personalized consultation session. Available via Google Meet or in-person.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 items-center">
-              <Link href="/book" className="btn-gold inline-flex items-center gap-2 px-8 py-3.5">
+              <a
+                href={getWhatsAppUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-gold inline-flex items-center gap-2 px-8 py-3.5"
+              >
                 Book Consultation
                 <ArrowRight className="w-4 h-4" />
-              </Link>
+              </a>
               <Link
                 href="/contact"
                 className="btn-outline-gold inline-flex items-center gap-2 px-8 py-3.5 text-white"
